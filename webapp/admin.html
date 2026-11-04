@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="uz">
+<head>
+  <meta charset="utf-8">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>IntelComp Admin</title>
+  <link rel="stylesheet" href="style.css?v=6">
+  <style>
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
+    .stats div { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 10px; }
+    .stats b { display: block; font-size: 20px; }
+    .stats span { font-size: 12px; color: var(--muted); }
+    .order { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px; margin-bottom: 10px; }
+    .order .head-row { margin-bottom: 6px; }
+    .badge { font-size: 12px; padding: 2px 8px; border-radius: 999px; background: #e0ecff; color: #1f4fa8; }
+    .badge.tasdiqlandi { background: #fff1d6; color: #8a5a00; }
+    .badge.jonatildi { background: #dcf5e4; color: #126b34; }
+    .order ol { margin: 6px 0; padding-left: 18px; font-size: 13px; }
+    .st { display: flex; gap: 6px; margin-top: 8px; }
+    .st button { flex: 1; border: 1px solid var(--line); background: var(--bg); border-radius: 8px; padding: 7px; cursor: pointer; font-size: 13px; }
+    h3 { font-size: 15px; margin: 18px 0 8px; }
+    .top-list { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 4px 12px; }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <div class="brand">
+      <div class="logo">IC</div>
+      <div><div class="brand-name">Admin panel</div><div class="brand-sub">Demo · buyurtmalar shu brauzerda saqlanadi</div></div>
+    </div>
+    <a class="btn ghost" style="display:block" href="index.html">← Katalogga</a>
+  </header>
+  <main>
+    <div class="stats" id="stats"></div>
+    <h3>Buyurtmalar</h3>
+    <div id="orders"></div>
+    <h3>Eng ko'p ko'rilgan mahsulotlar</h3>
+    <div class="top-list" id="top"></div>
+  </main>
+  <script>
+    const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    const load = () => { try { return JSON.parse(localStorage.getItem("ic_orders")) || []; } catch { return []; } };
+    const saveOrders = (o) => { try { localStorage.setItem("ic_orders", JSON.stringify(o)); } catch {} };
+    const money = (v, mode) => mode === "retail" ? v.toLocaleString("ru-RU").replace(/,/g, " ") + " so'm" : (Math.round(v * 100) / 100) + " y.e";
+    const STATUSES = [["yangi", "Yangi"], ["tasdiqlandi", "Tasdiqlandi"], ["jonatildi", "Jo'natildi"]];
+
+    function render(products) {
+      const orders = load();
+      document.getElementById("stats").innerHTML = `
+        <div><b>${products.length}</b><span>mahsulot katalogda</span></div>
+        <div><b>${orders.length}</b><span>buyurtma</span></div>
+        <div><b>${orders.filter((o) => o.status === "yangi").length}</b><span>yangi, javob kutmoqda</span></div>`;
+      document.getElementById("orders").innerHTML = orders.length ? orders.map((o, i) => `
+        <div class="order">
+          <div class="head-row"><b>#${o.no} · ${esc(o.name)}</b><span class="badge ${o.status}">${STATUSES.find((s) => s[0] === o.status)[1]}</span></div>
+          <div class="sub" style="margin:0">📞 ${esc(o.phone)} · ${new Date(o.at).toLocaleString("ru-RU")} · ${o.mode === "retail" ? "donalab" : "ulgurji"}</div>
+          ${o.note ? `<div class="sub" style="margin:4px 0 0">📝 ${esc(o.note)}</div>` : ""}
+          <ol>${o.lines.map((l) => `<li>${esc(l.name)} × ${l.qty}</li>`).join("")}</ol>
+          <b>Jami: ${money(o.total, o.mode)}</b>
+          <div class="st">${STATUSES.map(([k, t]) => `<button data-i="${i}" data-s="${k}" ${o.status === k ? "disabled" : ""}>${t}</button>`).join("")}</div>
+        </div>`).join("") : `<div class="empty">Hali buyurtma yo'q. Katalogdan sinab buyurtma bering<br>yoki namunalarni qo'shing.<br><br>
+          <button class="btn" id="seed" style="flex:none;padding:10px 16px">Namuna buyurtmalar qo'shish</button></div>`;
+      document.getElementById("top").innerHTML = products.slice().sort((a, b) => (b.views || 0) - (a.views || 0)).slice(0, 10)
+        .map((p) => `<div class="line"><img src="${esc(p.image)}" alt=""><div class="ln">${esc(p.name)}<small>${p.views} ko'rish</small></div></div>`).join("");
+    }
+
+    // Egasiga ko'rsatish uchun: katalogdagi haqiqiy mahsulotlardan to'qilgan namunaviy buyurtmalar
+    function sampleOrders(products) {
+      const pick = (mode, n, seed) => products.filter((p) => mode === "retail" ? p.retail_uzs : p.wholesale_usd)
+        .slice(seed, seed + n * 7).filter((_, i) => i % 7 === 0);
+      const make = (no, name, phone, note, mode, status, hoursAgo, items, qtys) => {
+        const lines = items.map((p, i) => ({ id: p.id, name: p.name, qty: qtys[i],
+          price: mode === "retail" ? p.retail_uzs : p.wholesale_usd }));
+        return { no, at: new Date(Date.now() - hoursAgo * 3600e3).toISOString(), mode, name, phone, note, status, lines,
+          total: lines.reduce((s, l) => s + l.price * l.qty, 0) };
+      };
+      return [
+        make(1003, "Namuna: Sardor", "+998 90 *** ** 11", "Chilonzor, kechqurun", "retail", "yangi", 0.3, pick("retail", 2, 3), [1, 2]),
+        make(1002, "Namuna: Samarqand do'koni", "+998 93 *** ** 22", "Pochta orqali jo'natish", "wholesale", "tasdiqlandi", 5, pick("wholesale", 4, 40), [20, 10, 10, 5]),
+        make(1001, "Namuna: Dilnoza", "+998 99 *** ** 33", "", "retail", "jonatildi", 26, pick("retail", 1, 90), [1]),
+      ];
+    }
+
+    fetch("products.json").then((r) => r.json()).then(({ products }) => {
+      render(products);
+      document.getElementById("orders").addEventListener("click", (e) => {
+        if (e.target.id === "seed") {
+          saveOrders(sampleOrders(products));
+          return render(products);
+        }
+        const b = e.target.closest("[data-s]");
+        if (!b) return;
+        const orders = load();
+        orders[b.dataset.i].status = b.dataset.s;
+        saveOrders(orders);
+        render(products);
+      });
+    });
+  </script>
+</body>
+</html>
