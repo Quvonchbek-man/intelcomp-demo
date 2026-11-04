@@ -62,7 +62,8 @@ python -X utf8 -I scraper/fetch_posts.py                    # kanalni yig'ish (t
 python -X utf8 -I scraper/build_catalog.py --since 2025-11-01   # katalog + rasmlar
 python -X utf8 -I scraper/optimize_images.py                # rasmlarni WebP ga siqish
 ```
-Joylash (GitHub Pages, `gh-pages` = `webapp/` papkasi):
+Joylash: https://quvonchbek-man.github.io/intelcomp-demo/ (repo `Quvonchbek-man/intelcomp-demo`, ochiq; `gh-pages` = `webapp/` papkasi).
+Internet sekin bo'lsa, katta push 408 bilan uziladi: rasmlarni ~100 tadan alohida vaqtinchalik branch'ga yuborib, keyin asosiy branch'larni push qilish kerak.
 ```
 git subtree split --prefix webapp -b gh-pages && git push -f origin gh-pages
 ```
@@ -70,6 +71,6 @@ Ko'rish: `D:\Claude\.claude\launch.json` → `intelcomp-demo` (http://localhost:
 
 ## 8. Holat va ochiq savollar (2026-11-04)
 - Ishlaydi: o'zbek/rus tili (avtomatik + UZ/RU tugmasi), yig'ish, katalog, qidiruv, kategoriyalar, donalab/ulgurji rejim, savatcha, buyurtma, admin demo.
-- Hali yo'q: haqiqiy backend (bot buyurtmani adminga yuboradi), ulgurji mijozni tasdiqlash, katalogdan kanalga avtopost, HTTPS hosting va BotFather'da Mini App ulash.
+- Hali yo'q: haqiqiy backend (bot buyurtmani adminga yuboradi), ulgurji mijozni tasdiqlash, katalogdan kanalga avtopost, BotFather'da Mini App ulash. HTTPS hosting tayyor (GitHub Pages, 2026-11-04).
 - "Boshqa" kategoriyasida MARVO/MONKA kabi brend sichqonchalari qolishi mumkin, chunki nomida "MOUSE" so'zi yo'q.
 - Kanal egasi bilan hali gaplashilmagan.
