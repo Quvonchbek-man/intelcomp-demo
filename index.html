@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="uz">
+<head>
+  <meta charset="utf-8">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+  <title>IntelComp Katalog</title>
+  <link rel="stylesheet" href="style.css?v=6">
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+  <div class="demo-strip" data-i18n="demo"></div>
+  <header class="top">
+    <div class="brand">
+      <div class="logo">IC</div>
+      <div class="brand-text">
+        <div class="brand-name">IntelComp<sup>®</sup></div>
+        <div class="brand-sub" data-i18n="sub"></div>
+      </div>
+      <div class="lang" id="lang">
+        <button data-lang="uz">UZ</button>
+        <button data-lang="ru">RU</button>
+      </div>
+      <a class="admin-link" href="admin.html" title="Admin panel (demo)">⚙ Admin</a>
+    </div>
+    <div class="search">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.5 3a7.5 7.5 0 0 1 5.9 12.1l4.2 4.2-1.4 1.4-4.2-4.2A7.5 7.5 0 1 1 10.5 3zm0 2a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11z"/></svg>
+      <input id="q" type="search" data-i18n-ph="search" autocomplete="off">
+    </div>
+    <div class="row">
+      <div class="seg" id="mode">
+        <button data-mode="retail" class="on" data-i18n="retail"></button>
+        <button data-mode="wholesale" data-i18n="wholesale"></button>
+      </div>
+      <select id="sort">
+        <option value="new" data-i18n="sort_new"></option>
+        <option value="cheap" data-i18n="sort_cheap"></option>
+        <option value="pricey" data-i18n="sort_pricey"></option>
+        <option value="popular" data-i18n="sort_popular"></option>
+      </select>
+    </div>
+    <nav class="chips" id="cats"></nav>
+  </header>
+
+  <main>
+    <div id="mode-note" class="note" data-i18n="wholesale_note" hidden></div>
+    <div id="count" class="count"></div>
+    <section id="grid" class="grid"></section>
+    <div id="empty" class="empty" data-i18n="empty" hidden></div>
+  </main>
+
+  <button id="cart-bar" class="cart-bar" hidden>
+    <span id="cart-count"></span>
+    <span data-i18n="cart"></span>
+    <b id="cart-total"></b>
+  </button>
+
+  <div id="sheet" class="sheet" hidden>
+    <div class="sheet-bg" data-close></div>
+    <div class="sheet-body" id="sheet-body"></div>
+  </div>
+
+  <script src="i18n.js?v=6"></script>
+  <script src="app.js?v=6"></script>
+</body>
+</html>
