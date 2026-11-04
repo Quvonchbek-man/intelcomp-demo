@@ -115,9 +115,10 @@ function renderCartBar() {
   const n = lines.reduce((s, l) => s + l.qty, 0);
   $("#cart-bar").hidden = n === 0;
   if (!n) return;
-  const { total } = cartTotal(lines);
+  const { total, unknown } = cartTotal(lines);
   $("#cart-count").textContent = n;
-  $("#cart-total").textContent = fmtPrice(total);
+  // Narxi noma'lum tovar bo'lsa "0 so'm" emas, "Narxini so'rang" yoki "... +" ko'rsatiladi
+  $("#cart-total").textContent = total ? fmtPrice(total) + (unknown ? " +" : "") : T().ask_price;
 }
 
 function setQty(id, qty) {
@@ -173,7 +174,7 @@ function openCart() {
         <div class="ln">${esc(p.name)}<small>${fmtPrice(priceOf(p)) || T().price_by_admin}</small></div>
         <div class="qty"><button data-cq="${p.id}" data-d="-1">−</button><span>${qty}</span><button data-cq="${p.id}" data-d="1">+</button></div>
       </div>`).join("")}
-    <div class="total"><span>${T().total}</span><span>${fmtPrice(total)}</span></div>
+    <div class="total"><span>${T().total}</span><span>${total ? fmtPrice(total) : "—"}</span></div>
     ${unknown ? `<div class="sub">${T().unknown_prices(unknown)}</div>` : ""}
     <input class="field" id="o-name" placeholder="${T().f_name}" value="${esc(user ? [user.first_name, user.last_name].filter(Boolean).join(" ") : "")}">
     <input class="field" id="o-phone" type="tel" placeholder="${T().f_phone}" inputmode="tel">
