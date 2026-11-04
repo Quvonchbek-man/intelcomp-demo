@@ -21,9 +21,9 @@ Backend yo'q: buyurtmalar brauzerning `localStorage`ida saqlanadi (faqat demo uc
 | Papka | Nima |
 |---|---|
 | `scraper/` | Kanalni yig'ish va katalog qurish skriptlari (faqat stdlib) |
-| `data/` | Xom postlar `posts.jsonl`, yig'ish jurnali `fetch.log` (gitignore) |
+| `data/` | Xom postlar `posts.jsonl`, jurnallar, asl JPG rasmlar `img_orig/` (gitignore) |
 | `webapp/` | Statik Mini App: shu papkani istalgan HTTPS hostingga qo'yish kifoya |
-| `webapp/img/` | Yuklab olingan mahsulot rasmlari, `<post_id>.jpg` (gitignore) |
+| `webapp/img/` | Mahsulot rasmlari, `<post_id>.webp` (480px, ~11 KB), gitga kiradi |
 
 ## 4. Fayllar (qator raqamlari taxminiy)
 - `scraper/fetch_posts.py`: `parse_page()` ~45 (HTML → post dict), `main()` ~80. `?before=<id>` bilan orqaga sahifalaydi, qayta ishga tushirilsa eng eski postdan davom etadi.
@@ -33,6 +33,7 @@ Backend yo'q: buyurtmalar brauzerning `localStorage`ida saqlanadi (faqat demo uc
   - `parse_post()` ~55: matndan nom, izoh, narxlar, kategoriya
   - `inherit_batch_category()`: nomidan aniqlanmagan mahsulot o'sha daqiqadagi partiyaning kategoriyasini oladi
   - `main()`: nom bo'yicha dublikatlarni olib tashlaydi (eng yangi post qoladi), rasmlarni yuklaydi, `products.json` yozadi
+- `scraper/optimize_images.py`: `img/*.jpg` → 480px WebP, asl nusxani `data/img_orig/` ga ko'chiradi, `products.json` yo'llarini yangilaydi. `build_catalog.py` mavjud `.webp`ni qayta yuklamaydi
 - `webapp/i18n.js`: `I18N.uz` / `I18N.ru` (interfeys matnlari va kategoriya nomlari), `ruPlural()`, `detectLang()` (saqlangan tanlov → Telegram `language_code` → brauzer tili)
 - `webapp/app.js`: `T()` joriy til lug'ati, `applyLang()` (`data-i18n`, `data-i18n-ph` atributlarini to'ldiradi), `state` ~10, `filtered()` (qidiruv + sinonimlar `SYNONYMS`), `renderGrid()`, `openProduct()`, `openCart()`, `checkout()` (buyurtma → `ic_orders`), `orderText()` (admin oladigan xabar, mijoz tilidan qat'i nazar doim o'zbekcha), `bind()` (barcha hodisalar), `init()`
 - `webapp/admin.html`: ichki skript, `ic_orders`ni o'qiydi, statuslar: yangi → tasdiqlandi → jo'natildi; `sampleOrders()` bo'sh panelga katalogdagi haqiqiy mahsulotlardan 3 ta namunaviy buyurtma qo'shadi. Katalogdan kirish: yuqoridagi `⚙ Admin` havolasi
@@ -59,6 +60,11 @@ Backend yo'q: buyurtmalar brauzerning `localStorage`ida saqlanadi (faqat demo uc
 ```
 python -X utf8 -I scraper/fetch_posts.py                    # kanalni yig'ish (to'liq tarix ~1 soat)
 python -X utf8 -I scraper/build_catalog.py --since 2025-11-01   # katalog + rasmlar
+python -X utf8 -I scraper/optimize_images.py                # rasmlarni WebP ga siqish
+```
+Joylash (GitHub Pages, `gh-pages` = `webapp/` papkasi):
+```
+git subtree split --prefix webapp -b gh-pages && git push -f origin gh-pages
 ```
 Ko'rish: `D:\Claude\.claude\launch.json` → `intelcomp-demo` (http://localhost:8765).
 
